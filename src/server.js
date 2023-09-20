@@ -58,10 +58,6 @@ app.get("/", async (req, res) => {
 
     findRowBounds(detections);
 
-    console.log(
-      `Bounds: left : x: ${topLeft[0]}, ${bottomLeft[0]} y: ${topLeft[1]}, ${bottomLeft[1]}\n Bounds: right : x: ${topRight[0]}, ${bottomRight[0]} y: ${topRight[1]}, ${bottomRight[1]}\n `
-    );
-
     detections.forEach((detection) => {
       if (detection.boundingPoly !== undefined) {
         let point = [
@@ -115,10 +111,8 @@ function inBounds(point) {
   let x = point[0];
   let y = point[1];
   return (
-    (x > topLeft[0] - 10 || x > bottomLeft[0] - 10) &&
-    (x < topRight[0] + 10 || x < bottomRight[0] + 10) &&
-    (y < topLeft[1] + 10 || y < topRight[1] + 10) &&
-    (y > bottomLeft[1] - 10 || y > bottomRight[1] - 10)
+    (y > topLeft[1] - 20 || y > topRight[1] - 20) &&
+    (y < bottomLeft[1]  || y < bottomRight[1])
   );
 }
 
@@ -127,26 +121,26 @@ function findRowBounds(detections) {
     let detection = detections[i];
     if (detection.description === "Yassine") {
       console.log(detection.boundingPoly.vertices)
-      topLeft[0] = detection.boundingPoly.vertices[3].x; //gets x value of box vertex in the top left.
-      topLeft[1] = detection.boundingPoly.vertices[3].y;
-      bottomLeft[0] = detection.boundingPoly.vertices[0].x;
-      bottomLeft[1] = detection.boundingPoly.vertices[0].y;
+      topLeft[0] = detection.boundingPoly.vertices[0].x; //gets x value of box vertex in the top left.
+      topLeft[1] = detection.boundingPoly.vertices[0].y;
+      bottomLeft[0] = detection.boundingPoly.vertices[3].x;
+      bottomLeft[1] = detection.boundingPoly.vertices[3].y;
 
       //small box corners to find the shape and total height of the row
       let tempTopRight = [
-        detection.boundingPoly.vertices[2].x,
-        detection.boundingPoly.vertices[2].y,
-      ];
-      let tempBottomRight = [
         detection.boundingPoly.vertices[1].x,
         detection.boundingPoly.vertices[1].y,
       ];
-      topRight[1] = getMaxHeight(topLeft, tempTopRight, topRight[0]);
+      let tempBottomRight = [
+        detection.boundingPoly.vertices[0].x,
+        detection.boundingPoly.vertices[0].y,
+      ];
+      topRight[1] = getMaxHeight(topLeft, tempTopRight, topRight[0]) + 10;
       bottomRight[1] = getMaxHeight(
         bottomLeft,
         tempBottomRight,
         bottomRight[0]
-      );
+      ) +10;
 
       break;
     }
