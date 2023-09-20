@@ -1,10 +1,9 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import "dotenv/config";
-import fs from "fs";
-import { ImageAnnotatorClient } from "@google-cloud/vision";
-import { getMaxListeners } from "events";
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+require("dotenv/config");
+const fs = require("fs");
+const { ImageAnnotatorClient } = require("@google-cloud/vision");
 
 const app = express();
 const port = 3000;
@@ -23,18 +22,16 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-const positions =  {"TBHExit": "butterfly house exit", "B2": "butterfly house exit", "TBHIn": "butterfly house exit"}
-const fileUrl = `./IMG_3021.jpg`;
-let result = "";
+const positions =  {"TBHExit": "Butterfly House Exit", "B2": "Building 2 Roam", "TBHIn": "Butterfly House Enterance", "Lu": "Lunch"}
 
 let topLeft = [0, 0];
 let bottomLeft = [0, 0];
 let topRight = [0, 0];
 let bottomRight = [0, 0];
 
-app.get("/", async (req, res) => {
-  //const { image } = req.body;
-  const imageBuffer = fs.readFileSync("./IMG_3021.jpg");
+app.post("/", async (req, res) => {
+  console.log(req.body.fileUrl)
+  const imageBuffer = fs.readFileSync(req.body.fileUrl);
 
   // Process the image buffer as needed
   // For example, you can use it in your API call
@@ -50,7 +47,7 @@ app.get("/", async (req, res) => {
     // Performs text detection on the local file
     const [result] = await client.textDetection(imageBuffer);
     const detections = result.textAnnotations;
-    let schedule = "";
+    let schedule = [];
     // console.log(detections[detections.length - 1])
     topRight[0] = detections[detections.length - 1].boundingPoly.vertices[2].x;
     bottomRight[0] =
@@ -64,8 +61,10 @@ app.get("/", async (req, res) => {
           detection.boundingPoly.vertices[0].x,
           detection.boundingPoly.vertices[0].y,
         ];
-        schedule += inBounds(point) ?  ", " + detection.description : "";
-        console.log(`DETECTION, (${detection.description})\n vertecies: (${detection.boundingPoly.vertices[0].x},${detection.boundingPoly.vertices[0].y}), (${detection.boundingPoly.vertices[1].x},${detection.boundingPoly.vertices[1].y}), (${detection.boundingPoly.vertices[2].x},${detection.boundingPoly.vertices[2].y}), (${detection.boundingPoly.vertices[3].x},${detection.boundingPoly.vertices[3].y}) \n\n`)
+        if(inBounds(point)){
+          schedule.push(detection.description)
+        }
+        //console.log(`DETECTION, (${detection.description})\n vertecies: (${detection.boundingPoly.vertices[0].x},${detection.boundingPoly.vertices[0].y}), (${detection.boundingPoly.vertices[1].x},${detection.boundingPoly.vertices[1].y}), (${detection.boundingPoly.vertices[2].x},${detection.boundingPoly.vertices[2].y}), (${detection.boundingPoly.vertices[3].x},${detection.boundingPoly.vertices[3].y}) \n\n`)
       }
     });
 
@@ -120,7 +119,7 @@ function findRowBounds(detections) {
   for (let i = 0; i < detections.length; i++) {
     let detection = detections[i];
     if (detection.description === "Yassine") {
-      console.log(detection.boundingPoly.vertices)
+      //console.log(detection.boundingPoly.vertices)
       topLeft[0] = detection.boundingPoly.vertices[0].x; //gets x value of box vertex in the top left.
       topLeft[1] = detection.boundingPoly.vertices[0].y;
       bottomLeft[0] = detection.boundingPoly.vertices[3].x;
