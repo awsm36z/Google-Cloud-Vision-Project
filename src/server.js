@@ -22,7 +22,6 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-const positions =  {"TBHExit": "Butterfly House Exit", "B2": "Building 2 Roam", "TBHIn": "Butterfly House Enterance", "Lu": "Lunch"}
 
 let topLeft = [0, 0];
 let bottomLeft = [0, 0];
@@ -63,6 +62,7 @@ app.post("/", async (req, res) => {
         ];
         if(inBounds(point)){
           schedule.push(detection.description)
+
         }
         //console.log(`DETECTION, (${detection.description})\n vertecies: (${detection.boundingPoly.vertices[0].x},${detection.boundingPoly.vertices[0].y}), (${detection.boundingPoly.vertices[1].x},${detection.boundingPoly.vertices[1].y}), (${detection.boundingPoly.vertices[2].x},${detection.boundingPoly.vertices[2].y}), (${detection.boundingPoly.vertices[3].x},${detection.boundingPoly.vertices[3].y}) \n\n`)
       }
@@ -123,7 +123,7 @@ function findRowBounds(detections) {
       topLeft[0] = detection.boundingPoly.vertices[0].x; //gets x value of box vertex in the top left.
       topLeft[1] = detection.boundingPoly.vertices[0].y;
       bottomLeft[0] = detection.boundingPoly.vertices[3].x;
-      bottomLeft[1] = detection.boundingPoly.vertices[3].y;
+       bottomLeft[1] = detection.boundingPoly.vertices[3].y;
 
       //small box corners to find the shape and total height of the row
       let tempTopRight = [
@@ -145,6 +145,8 @@ function findRowBounds(detections) {
     }
   }
 }
+
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
