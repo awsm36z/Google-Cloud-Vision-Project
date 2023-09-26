@@ -1,5 +1,9 @@
 const ics = require("ics");
-
+const fetch = require("node-fetch");
+const fs = require("fs");
+let year = new Date().getFullYear();
+let day = new Date().getDate();
+let month = new Date().getMonth();
 const fileUrl = `./IMG_3219.jpg`;
 const positions = {
   TBHExit: "Butterfly House Exit",
@@ -18,6 +22,7 @@ const positions = {
   ];
 let finalSchedule = [];
 
+function getScheduleData() {
 fetch("http://localhost:3000", {
   method: "POST",
   headers: {
@@ -33,10 +38,14 @@ fetch("http://localhost:3000", {
     const events = finalSchedule.map((item) => {
       const title = Object.keys(item)[0];
       const time = item[title];
+      console.log(parseInt(time.split("-")[0].split(":")[0]))
+      console.log(parseInt(time.split("-")[0].split(":")[1]))
+      console.log(parseInt(time.split("-")[1].split(":")[0]))
+      console.log(parseInt(time.split("-")[1].split(":")[1]))
 
       return {
-        start: time.split("-")[0], // Assuming time format is "HH:mm-HH:mm"
-        end: time.split("-")[1], // Splitting start and end times
+        start: [year, month, day, /**hour */ parseInt(time.split("-")[0].split(":")[0]), parseInt(time.split("-")[0].split(":")[1]) ], // Assuming time format is "HH:mm-HH:mm"
+        end: [year, month, day, /**hour */ parseInt(time.split("-")[1].split(":")[0]), parseInt(time.split("-")[1].split(":")[1]) ], // Splitting start and end times
         title: title,
       };
     });
@@ -55,6 +64,7 @@ fetch("http://localhost:3000", {
   .catch((error) => {
     console.error("Error:", error);
   });
+}
 
 function dataClean(schedule) {
   let clean = [];
@@ -101,3 +111,6 @@ function defSchedule(schedule) {
   }
   return newSchedule;
 }
+
+
+getScheduleData();
