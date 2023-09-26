@@ -41,7 +41,7 @@ app.post("/", async (req, res) => {
     /**
      * TODO(developer): Uncomment the following line before running the sample.
      */
-    const fileName = "./IMG_3021.jpg";
+    
 
     // Performs text detection on the local file
     const [result] = await client.textDetection(imageBuffer);
