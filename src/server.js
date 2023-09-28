@@ -29,7 +29,7 @@ let topRight = [0, 0];
 let bottomRight = [0, 0];
 
 app.post("/", async (req, res) => {
-  console.log(req.body.fileUrl)
+  //console.log(req.body.fileUrl)
   const imageBuffer = fs.readFileSync(req.body.fileUrl);
 
   // Process the image buffer as needed

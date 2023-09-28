@@ -5,6 +5,7 @@ let year = new Date().getFullYear();
 let day = new Date().getDate();
 let month = new Date().getMonth();
 const fileUrl = `./IMG_3214.jpg`;
+
 const positions = {
   TBHExit: "Butterfly House Exit",
   TBHIn: "Butterfly House Enterance",
@@ -66,7 +67,7 @@ function getScheduleData() {
         };
       }).filter(event => event !== null); // Filter out null values;
 
-      console.log(JSON.stringify(events));
+      //console.log(JSON.stringify(events));
       //console.log(`FINAL SCHEDULE: ${JSON.stringify(finalSchedule, null, 1)}`);
       const { error, value } = ics.createEvents(events);
 
@@ -74,7 +75,7 @@ function getScheduleData() {
         console.error("Error:", error);
       } else {
         fs.writeFileSync("schedule.ics", value);
-        console.log("ICS file written successfully!");
+        //console.log("ICS file written successfully!");
       }
     })
     .catch((error) => {
