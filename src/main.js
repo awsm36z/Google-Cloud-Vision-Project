@@ -4,7 +4,7 @@ const fs = require("fs");
 let year = new Date().getFullYear();
 let day = new Date().getDate();
 let month = new Date().getMonth();
-const fileUrl = `./IMG_3214.jpg`;
+const fileUrl = `./IMG_3250.jpg`;
 
 const positions = {
   TBHExit: "Butterfly House Exit",
@@ -12,6 +12,7 @@ const positions = {
   Tidepool: "Tidepool",
 };
 let times = [
+  "9:00-10:00",
   "10:00-11:00",
   "11:00-12:00",
   "12:00-13:00",
@@ -21,6 +22,8 @@ let times = [
   "16:00-17:00",
   "17:00-17:15",
 ];
+let startTime = 0;
+let endTime = 8;
 let finalSchedule = [];
 
 function getScheduleData() {
@@ -33,8 +36,9 @@ function getScheduleData() {
   })
     .then((response) => response.json())
     .then((data) => {
-      clean = dataClean(data.schedule);
+      clean = cleanData(data.schedule);
       finalSchedule = defSchedule(clean);
+      console.log(finalSchedule)
 
       const events = finalSchedule.map((item) => {
         const title = Object.keys(item)[0];
@@ -51,14 +55,14 @@ function getScheduleData() {
         return {
           start: [
             year,
-            month,
+            month + 1,
             day,
             /**hour */ parseInt(time.split("-")[0].split(":")[0]),
             parseInt(time.split("-")[0].split(":")[1]),
           ], // Assuming time format is "HH:mm-HH:mm"
           end: [
             year,
-            month,
+            month + 1,
             day,
             /**hour */ parseInt(time.split("-")[1].split(":")[0]),
             parseInt(time.split("-")[1].split(":")[1]),
@@ -75,7 +79,7 @@ function getScheduleData() {
         console.error("Error:", error);
       } else {
         fs.writeFileSync("schedule.ics", value);
-        //console.log("ICS file written successfully!");
+        console.log("ICS file written successfully!");
       }
     })
     .catch((error) => {
@@ -83,7 +87,7 @@ function getScheduleData() {
     });
 }
 
-function dataClean(schedule) {
+function cleanData(schedule) {
   let clean = [];
   let i = 0;
   schedule = schedule.slice(1);
@@ -91,8 +95,18 @@ function dataClean(schedule) {
     if (schedule[i + 1] == "/") {
       clean.push(schedule[i] + schedule[i + 1] + schedule[i + 2]);
       i += 2;
-    } else {
+    } else if(schedule[i] == "("){
+      let specialHours = schedule[i+1] //when parenthasies show up, it means special hours
+      let tempStart = parseInt(specialHours[0])
+      let tempEnd = parseInt(specialHours[2])
+      
+      startTime = tempStart > 8 ? tempStart - 9 : tempStart - 6 + startTime; // never start before 9, and never end past 7
+      endTime =  tempEnd == 12?  3: 2 + endTime;
+      i+=2
+    }
+     else {
       clean.push(schedule[i]);
+      //console.log(`scheudle[i] ${schedule[i]}`)
     }
   }
   // console.log(clean);
@@ -101,7 +115,16 @@ function dataClean(schedule) {
 
 function defSchedule(schedule) {
   let newSchedule = [];
-  let n = 0;
+  let n = startTime;
+
+  if (n == 0) {
+    title = "Morning Meeting + Prep";
+    let obj = {};
+    obj[title] = times[n];
+    n++;
+    newSchedule.push(obj);
+  }
+
   for (let i = 0; i < schedule.length; i++) {
     //console.log(schedule)
     let title = "";
@@ -116,7 +139,7 @@ function defSchedule(schedule) {
       //console.log(`schedule[${i}] is ${schedule[i]} `)
       title = schedule[i] + " -> " + schedule[i + 1];
       i++;
-    } else if (times[n] == "17:00-17:15") {
+    } else if (n == endTime) {
       title = schedule.slice(i, schedule.length + 1).join(" ");
     } else {
       title = schedule[i];
