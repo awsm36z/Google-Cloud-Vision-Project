@@ -4,7 +4,7 @@ const fs = require("fs");
 let year = new Date().getFullYear();
 let day = new Date().getDate();
 let month = new Date().getMonth();
-const fileUrl = `./IMG_3250.jpg`;
+const fileUrl = `./IMG_0074.jpg`;
 
 const positions = {
   TBHExit: "Butterfly House Exit",
