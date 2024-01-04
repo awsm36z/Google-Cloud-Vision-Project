@@ -26,7 +26,12 @@ THIS IS NOT FOR PROFIT, It is soley a personal project to make my life a little 
 ![schedule paper](https://github.com/awsm36z/Google-Cloud-Vision-Project/assets/43663221/25472bc2-e0df-452e-ad46-9366128d5113)
 
 
-Becomes->
+Becomes vvvvvv
 
 
 ![Schedule](https://github.com/awsm36z/Google-Cloud-Vision-Project/assets/43663221/0a77feaa-9515-41fb-bb4c-bd9a6f8323ad)
+
+
+Below is the terminal result when running the code:
+
+<img width="566" alt="Screenshot 2024-01-04 at 12 21 00 PM" src="https://github.com/awsm36z/Google-Cloud-Vision-Project/assets/43663221/d4822ed6-7ba1-41c4-a758-daa22dc61b11">
